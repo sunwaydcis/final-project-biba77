@@ -4,7 +4,9 @@ import scalafx.application.JFXApp3.PrimaryStage
 import scalafx.scene.input.{KeyCode, KeyEvent}
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Circle
-import scalafx. Includes. jfxKeyEvent2sfx
+import scalafx.Includes.jfxKeyEvent2sfx
+import scalafx.animation.AnimationTimer
+import scalafx.scene.text.{Font, Text}
 
 object MainApp extends JFXApp3{
 
@@ -24,9 +26,17 @@ object MainApp extends JFXApp3{
           radius = 20
           fill = Color.Red
         }
-
+    //Timer variables
+    var startTime = System.nanoTime()
+    val timerText = new Text {
+      text = "Time: 0"
+      font = Font (20)
+      fill = Color.Black
+      x = 700
+      y = 20
+    }
         //Scene content
-        content = List (ball)
+        content = List (ball, timerText)
 
         //Handle Keyboard input for ball movement
         onKeyPressed = keyEvent => {
@@ -38,6 +48,12 @@ object MainApp extends JFXApp3{
             case _ => // Do nothing for other keys
           }
         }
+
+        //Timer Update
+        AnimationTimer { _ =>
+          val elapsedTime = (System.nanoTime() - startTime) / 1e9
+          timerText.text = f"Time:$elapsedTime"
+        }.start()
       }
     }
   }
