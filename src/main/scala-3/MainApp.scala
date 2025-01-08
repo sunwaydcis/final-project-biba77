@@ -22,6 +22,9 @@ object MainApp extends JFXApp3{
           radius = 20
           fill = Color.Red
         }
+
+        //Scene content
+        content = List (ball)
       }
     }
   }
