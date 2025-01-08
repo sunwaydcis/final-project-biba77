@@ -14,6 +14,14 @@ object MainApp extends JFXApp3{
       height = 600
       scene = new Scene {
         fill = Color.LightGrey
+
+        //Ball
+        val ball = new Circle {
+          centerX = 100
+          centerY = 100
+          radius = 20
+          fill = Color.Red
+        }
       }
     }
   }
