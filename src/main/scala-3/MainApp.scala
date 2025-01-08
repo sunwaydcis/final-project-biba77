@@ -52,7 +52,7 @@ object MainApp extends JFXApp3{
         //Timer Update
         AnimationTimer { _ =>
           val elapsedTime = (System.nanoTime() - startTime) / 1e9
-          timerText.text = f"Time:$elapsedTime"
+          timerText.text = f"Time:$elapsedTime%.1f"
         }.start()
       }
     }
