@@ -51,7 +51,14 @@ object MainApp extends JFXApp3{
           height = 40
           fill = Color.Brown
         }
-
+        platforms += new Rectangle {
+          x = 370
+          y = 120
+          width = 200
+          height = 40
+          fill = Color.Brown
+        }
+        
         //Timer variables
         var startTime = System.nanoTime()
         val timerText = new Text {
