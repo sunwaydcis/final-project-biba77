@@ -101,13 +101,24 @@ object MainApp extends JFXApp3{
           onPlatform = false
           platforms.foreach { platform =>
             //Top collision
-            if (ball.centerY.value + ball.radius.value >= platform.y.value &&
+            if (velocityY >= 0 &&
+                ball.centerY.value + ball.radius.value >= platform.y.value &&
                 ball.centerY.value <= platform.y.value + platform.height.value &&
                 ball.centerX.value >= platform.x.value &&
                 ball.centerX.value <= platform.x.value + platform.width.value) {
               ball.centerY.value = platform.y.value - ball.radius.value //Places the ball on top of the platform
               velocityY = 0 //Stops the downward motion
               onPlatform = true
+            }
+
+            //Bottom Collisions
+            if (velocityY <0 &&
+                ball.centerY.value - ball.radius.value <= platform.y.value + platform.height.value &&
+                ball.centerY.value > platform.y.value &&
+                ball.centerX.value >= platform.x.value &&
+                ball.centerX.value <= platform.x.value + platform.width.value) {
+              velocityY = 0 //Stops downward motion
+              ball.centerY.value = platform.y.value - ball.radius.value
             }
 
             //Side Collisions
