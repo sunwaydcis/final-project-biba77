@@ -164,6 +164,21 @@ object MainApp extends JFXApp3{
             onPlatform = true
           }
 
+          //Plants collision detection
+          plants.foreach { plant =>
+            //Get plants bounding box
+            val plantBounds = plant.getBoundsInParent
+            if (ball.centerX.value + ball.radius.value >= plantBounds.getMinX &&
+                ball.centerX.value - ball.radius.value <= plantBounds.getMaxY &&
+                ball.centerY.value + ball.radius.value >= plantBounds.getMinY &&
+                ball.centerY.value - ball.radius.value <= plantBounds.getMaxY ) {
+              if (ball.radius.value == defaultRadius) {
+                ball.radius.value = grownRadius //Grow the ball
+              } else {
+                ball.radius.value = defaultRadius //Shrink the ball
+              }
+            }
+          }
 
           // Timer Update
           val elapsedTime = (System.nanoTime() - startTime) / 1e9
