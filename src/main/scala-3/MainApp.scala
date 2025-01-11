@@ -32,6 +32,7 @@ object MainApp extends JFXApp3{
         }
         val defaultRadius = 20
         val grownRadius = 30
+        var isGrown = false //states to track the ball size
 
         //Platforms
         val platforms = ListBuffer[Rectangle]()
@@ -177,10 +178,11 @@ object MainApp extends JFXApp3{
                 ball.centerX.value - ball.radius.value <= plantX + plantWidth &&
                 ball.centerY.value + ball.radius.value >= plantY &&
                 ball.centerY.value - ball.radius.value <= plantY + plantHeight) {
-              if (ball.radius.value == defaultRadius) {
+              if (!isGrown) {
                 ball.radius.value = grownRadius //Grow the ball
               } else {
                 ball.radius.value = defaultRadius //Shrink the ball
+                isGrown = false
               }
             }
           }
