@@ -166,12 +166,17 @@ object MainApp extends JFXApp3{
 
           //Plants collision detection
           plants.foreach { plant =>
+            //Get precise dimensions of the plant
+            val plantX = plant.x.value
+            val plantY = plant.y.value
+            val plantWidth = plant.fitWidth.value
+            val plantHeight = plant.fitHeight.value
             //Get plants bounding box
             val plantBounds = plant.getBoundsInParent
-            if (ball.centerX.value + ball.radius.value >= plantBounds.getMinX &&
-                ball.centerX.value - ball.radius.value <= plantBounds.getMaxY &&
-                ball.centerY.value + ball.radius.value >= plantBounds.getMinY &&
-                ball.centerY.value - ball.radius.value <= plantBounds.getMaxY ) {
+            if (ball.centerX.value + ball.radius.value >= plantX &&
+                ball.centerX.value - ball.radius.value <= plantX + plantWidth &&
+                ball.centerY.value + ball.radius.value >= plantY &&
+                ball.centerY.value - ball.radius.value <= plantY + plantHeight) {
               if (ball.radius.value == defaultRadius) {
                 ball.radius.value = grownRadius //Grow the ball
               } else {
