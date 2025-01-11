@@ -81,6 +81,23 @@ object MainApp extends JFXApp3{
               fitHeight = 40
         }
 
+        //Spikes
+        val spike1 = new ImageView {
+          image = new Image("file:C:\\Users\\User\\Downloads\\spike.png")
+          x = 300
+          y = 350
+          fitWidth = 40
+          fitHeight = 40
+        }
+        val spike2 = new ImageView {
+          image = new Image("file:C:\\Users\\User\\Downloads\\spike.png")
+          x = 600
+          y = 360
+          fitWidth = 40
+          fitHeight = 40
+        }
+
+        val spikes = List (spike1, spike2)
         val plants = List (plant1, plant2)
         
         //Timer variables
@@ -94,7 +111,7 @@ object MainApp extends JFXApp3{
         }
 
         //Scene content
-        content = ball +: timerText +: platforms ++: plants
+        content = Seq(ball, timerText) ++ platforms ++ plants ++ spikes
 
         //Gravity and Physics Variables
         var velocityY = 0.0
@@ -172,6 +189,7 @@ object MainApp extends JFXApp3{
             val plantY = plant.y.value
             val plantWidth = plant.fitWidth.value
             val plantHeight = plant.fitHeight.value
+
             //Get plants bounding box
             val plantBounds = plant.getBoundsInParent
             if (ball.centerX.value + ball.radius.value >= plantX &&
