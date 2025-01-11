@@ -6,7 +6,10 @@ import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle}
 import scalafx.Includes.jfxKeyEvent2sfx
 import scalafx.animation.AnimationTimer
+import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.text.{Font, Text}
+
+import scala.+:
 import scala.collection.mutable.ListBuffer
 
 object MainApp extends JFXApp3{
@@ -27,6 +30,8 @@ object MainApp extends JFXApp3{
           radius = 20
           fill = Color.Red
         }
+        val defaultRadius = 20
+        val grownRadius = 30
 
         //Platforms
         val platforms = ListBuffer[Rectangle]()
@@ -58,6 +63,24 @@ object MainApp extends JFXApp3{
           height = 40
           fill = Color.Brown
         }
+
+        //Plants
+        val plant1 = new ImageView {
+          image = new Image ("file:C:\\Users\\User\\Downloads\\plant.png")
+              x = 50
+              y = 360
+              fitWidth = 40
+              fitHeight = 40
+        }
+        val plant2 = new ImageView {
+          image = new Image ("file:C:\\Users\\User\\Downloads\\plant.png")
+              x = 550
+              y = 360
+              fitWidth =40
+              fitHeight = 40
+        }
+
+        val plants = List (plant1, plant2)
         
         //Timer variables
         var startTime = System.nanoTime()
@@ -70,7 +93,7 @@ object MainApp extends JFXApp3{
         }
 
         //Scene content
-        content = ball +: timerText +: platforms
+        content = ball +: timerText +: platforms ++: plants
 
         //Gravity and Physics Variables
         var velocityY = 0.0
