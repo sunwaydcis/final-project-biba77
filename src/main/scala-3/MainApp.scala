@@ -8,9 +8,26 @@ import scalafx.Includes.jfxKeyEvent2sfx
 import scalafx.animation.AnimationTimer
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.text.{Font, Text}
-
-import scala.+:
 import scala.collection.mutable.ListBuffer
+
+
+//Base class for GameObject
+abstract class GameObject (
+                          var x: Double,
+                          var y: Double,
+                          val width: Double,
+                          val height: Double
+                          ) {
+  def draw (): Unit //to be implemented by subclasses
+
+  //Check if this objects collides with another
+  def collidesWith(other: GameObject): Boolean = {
+    x < other.x + other.width &&
+      x + width > other.x &&
+      y < other.y + other.height &&
+      y + height > other.y
+  }
+}
 
 object MainApp extends JFXApp3{
 
