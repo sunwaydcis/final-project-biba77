@@ -18,7 +18,7 @@ abstract class GameObject (
                           val width: Double,
                           val height: Double
                           ) {
-  def draw (): Unit //to be implemented by subclasses
+  def draw (): scalafx.scene.Node //to be implemented by subclasses
 
   //Check if this objects collides with another
   def collidesWith(other: GameObject): Boolean = {
@@ -29,6 +29,19 @@ abstract class GameObject (
   }
 }
 
+//Platforms
+class Platform(x: Double, y: Double, width: Double, height: Double) extends GameObject(x, y, width, height) {
+  private val rectangle = new Rectangle {
+    this.x = Platform.this.x
+    this.y = Platform.this.y
+    this.width = Platform.this.width
+    this.height = Platform.this.height
+    fill = Color.Brown
+  }
+
+  //Draw the platform
+  override def draw(): scalafx.scene.Node = rectangle
+}
 object MainApp extends JFXApp3{
 
   override def start(): Unit = {
@@ -52,35 +65,12 @@ object MainApp extends JFXApp3{
         var isGrown = false //states to track the ball size
 
         //Platforms
-        val platforms = ListBuffer[Rectangle]()
-        platforms += new Rectangle {
-          x = 0
-          y = 300
-          width = 200
-          height = 40
-          fill = Color.Brown
-        }
-        platforms += new Rectangle {
-          x = 0
-          y = 400
-          width = 800
-          height = 30
-          fill = Color.Brown
-        }
-        platforms += new Rectangle {
-          x = 200
-          y = 220
-          width = 200
-          height = 40
-          fill = Color.Brown
-        }
-        platforms += new Rectangle {
-          x = 370
-          y = 120
-          width = 200
-          height = 40
-          fill = Color.Brown
-        }
+        val platforms = Seq(
+          new Platform (0, 300, 200, 40),
+          new Platform (0, 400, 800, 30),
+          new Platform (200, 220, 200, 40),
+          new Platform (370, 120, 200, 40)
+        )
 
         //Plants
         val plant1 = new ImageView {
@@ -128,7 +118,7 @@ object MainApp extends JFXApp3{
         }
 
         //Scene content
-        content = Seq(ball, timerText) ++ platforms ++ plants ++ spikes
+        content = Seq(ball, timerText) ++ platforms.map(_.draw()) ++ plants ++ spikes
 
         //Gravity and Physics Variables
         var velocityY = 0.0
@@ -160,34 +150,34 @@ object MainApp extends JFXApp3{
           platforms.foreach { platform =>
             //Top collision
             if (velocityY >= 0 &&
-                ball.centerY.value + ball.radius.value >= platform.y.value &&
-                ball.centerY.value <= platform.y.value + platform.height.value &&
-                ball.centerX.value >= platform.x.value &&
-                ball.centerX.value <= platform.x.value + platform.width.value) {
-              ball.centerY.value = platform.y.value - ball.radius.value //Places the ball on top of the platform
+                ball.centerY.value + ball.radius.value >= platform.y &&
+                ball.centerY.value <= platform.y + platform.height &&
+                ball.centerX.value >= platform.x &&
+                ball.centerX.value <= platform.x + platform.width) {
+              ball.centerY.value = platform.y - ball.radius.value //Places the ball on top of the platform
               velocityY = 0 //Stops the downward motion
               onPlatform = true
             }
 
             //Bottom Collisions
             if (velocityY <0 &&
-                ball.centerY.value - ball.radius.value <= platform.y.value + platform.height.value &&
-                ball.centerY.value > platform.y.value &&
-                ball.centerX.value >= platform.x.value &&
-                ball.centerX.value <= platform.x.value + platform.width.value) {
+                ball.centerY.value - ball.radius.value <= platform.y + platform.height &&
+                ball.centerY.value > platform.y &&
+                ball.centerX.value >= platform.x &&
+                ball.centerX.value <= platform.x + platform.width) {
               velocityY = 0 //Stops downward motion
-              ball.centerY.value = platform.y.value - ball.radius.value
+              ball.centerY.value = platform.y - ball.radius.value
             }
 
             //Side Collisions
-            if (ball.centerX.value + ball.radius.value >= platform.x.value &&
-                ball.centerX.value - ball.radius.value <= platform.x.value + platform.width.value &&
-                ball.centerY.value >= platform.y.value &&
-                ball.centerY.value <= platform.y.value + platform.height.value) {
-              if (ball.centerX.value < platform.x.value) { //Left side
-                ball.centerX.value = platform.x.value - ball.radius.value
-              } else if (ball.centerX.value > platform.x.value + platform.width.value) {
-                ball.centerX.value = platform.x.value + platform.width.value + ball.radius.value
+            if (ball.centerX.value + ball.radius.value >= platform.x &&
+                ball.centerX.value - ball.radius.value <= platform.x + platform.width &&
+                ball.centerY.value >= platform.y &&
+                ball.centerY.value <= platform.y + platform.height) {
+              if (ball.centerX.value < platform.x) { //Left side
+                ball.centerX.value = platform.x - ball.radius.value
+              } else if (ball.centerX.value > platform.x + platform.width) {
+                ball.centerX.value = platform.x + platform.width + ball.radius.value
               }
             }
           }
