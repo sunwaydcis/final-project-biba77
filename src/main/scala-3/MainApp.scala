@@ -169,6 +169,7 @@ object MainApp extends JFXApp3{
         )
 
         //Lives
+        var lives = 2
         val hearts = List (
           new Heart (0, 10),
           new Heart (25, 10)
@@ -185,7 +186,13 @@ object MainApp extends JFXApp3{
         }
 
         //Scene content
-        content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw()) ++ spikes.map(_.draw()) ++ hearts.map(_.draw())
+        def updateHearts(): Unit = {
+          content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw())
+            ++ plants.map(_.draw()) ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw())
+        }
+
+        //Initial content
+        updateHearts()
 
         //Gravity and Physics Variables
         var velocityY = 0.0
@@ -256,6 +263,20 @@ object MainApp extends JFXApp3{
           plants.foreach { plant =>
             if (ball.collidesWith(plant)) {
               plant.applyEffect(ball)
+            }
+          }
+
+          //Spikes collision detection
+          spikes.foreach { spike =>
+            if (ball.collidesWith(spike)) {
+              if (lives > 0) {
+                lives -= 1
+                updateHearts()
+                if (lives < 1) {
+                  println("Game Over!")
+                  System.exit(0)
+                }
+              }
             }
           }
 
