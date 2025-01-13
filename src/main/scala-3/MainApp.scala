@@ -113,6 +113,19 @@ class Plant (x: Double, y: Double, width: Double = 40, height: Double = 40) exte
   override def draw(): scalafx.scene.Node = imageView
   }
 
+// Spike class
+class Spike(x: Double, y: Double, width: Double = 40, height: Double = 40) extends GameObject(x, y, width, height) {
+  private val imageView = new ImageView {
+    image = new Image("file:C:\\Users\\User\\Downloads\\spike.png")
+    this.x = Spike.this.x
+    this.y = Spike.this.y
+    this.fitWidth = Spike.this.width
+    this.fitHeight = Spike.this.height
+  }
+
+  override def draw(): scalafx.scene.Node = imageView
+}
+
 object MainApp extends JFXApp3{
 
   override def start(): Unit = {
@@ -142,22 +155,11 @@ object MainApp extends JFXApp3{
         )
 
         //Spikes
-        val spike1 = new ImageView {
-          image = new Image("file:C:\\Users\\User\\Downloads\\spike.png")
-          x = 300
-          y = 350
-          fitWidth = 40
-          fitHeight = 40
-        }
-        val spike2 = new ImageView {
-          image = new Image("file:C:\\Users\\User\\Downloads\\spike.png")
-          x = 600
-          y = 360
-          fitWidth = 40
-          fitHeight = 40
-        }
+        val spikes = List (
+          new Spike (300, 350),
+          new Spike (600, 360)
+        )
 
-        val spikes = List (spike1, spike2)
         
         //Timer variables
         var startTime = System.nanoTime()
@@ -170,7 +172,7 @@ object MainApp extends JFXApp3{
         }
 
         //Scene content
-        content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw()) ++ spikes
+        content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw()) ++ spikes.map(_.draw())
 
         //Gravity and Physics Variables
         var velocityY = 0.0
