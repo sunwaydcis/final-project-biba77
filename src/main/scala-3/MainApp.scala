@@ -6,10 +6,8 @@ import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle}
 import scalafx.Includes.jfxKeyEvent2sfx
 import scalafx.animation.AnimationTimer
-import scalafx.beans.property.DoubleProperty
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.text.{Font, Text}
-
 import scala.collection.mutable.ListBuffer
 
 
