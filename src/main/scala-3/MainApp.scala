@@ -125,7 +125,7 @@ class Spike(x: Double, y: Double, width: Double = 40, height: Double = 40) exten
 //Heart class
 class Heart(x: Double, y: Double, width: Double = 30, height: Double = 30) extends GameObject(x, y, width, height) {
   private val imageView = new ImageView {
-    image = new Image("file:C:\\Users\\User\\Downloads\\heart.png")
+    image = new Image("file:C:\\Users\\User\\Downloads\\heart .png")
     this.x = Heart.this.x
     this.y = Heart.this.y
     this.fitWidth = Heart.this.width
@@ -168,6 +168,11 @@ object MainApp extends JFXApp3{
           new Spike (600, 360)
         )
 
+        //Lives
+        val hearts = List (
+          new Heart (0, 10),
+          new Heart (25, 10)
+        )
 
         //Timer variables
         var startTime = System.nanoTime()
@@ -180,7 +185,7 @@ object MainApp extends JFXApp3{
         }
 
         //Scene content
-        content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw()) ++ spikes.map(_.draw())
+        content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw()) ++ spikes.map(_.draw()) ++ hearts.map(_.draw())
 
         //Gravity and Physics Variables
         var velocityY = 0.0
