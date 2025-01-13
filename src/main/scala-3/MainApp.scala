@@ -6,8 +6,10 @@ import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle}
 import scalafx.Includes.jfxKeyEvent2sfx
 import scalafx.animation.AnimationTimer
+import scalafx.beans.property.DoubleProperty
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.text.{Font, Text}
+
 import scala.collection.mutable.ListBuffer
 
 
@@ -15,8 +17,8 @@ import scala.collection.mutable.ListBuffer
 abstract class GameObject (
                           var x: Double,
                           var y: Double,
-                          val width: Double,
-                          val height: Double
+                          var width: Double,
+                          var height: Double
                           ) {
   def draw (): scalafx.scene.Node //to be implemented by subclasses
 
@@ -28,6 +30,51 @@ abstract class GameObject (
       y + height > other.y
   }
 }
+
+// Ball class
+class Ball(startX: Double, startY: Double, initialRadius: Double, var isGrown: Boolean = false)
+  extends GameObject(startX - initialRadius, startY - initialRadius, initialRadius * 2, initialRadius * 2) {
+
+  private val circle = new Circle()
+  circle.centerX() = startX
+  circle.centerY() = startY
+  circle.radius() = initialRadius
+  circle.fill = Color.Red
+
+
+  val defaultRadius: Double = 20
+  val grownRadius: Double = 30
+
+  def centerX: Double = circle.centerX.value
+
+  def centerX_=(value: Double): Unit = {
+    x = value - radius
+    circle.centerX = value
+  }
+
+  def centerY: Double = circle.centerY.value
+
+  def centerY_=(value: Double): Unit = {
+    y = value - radius
+    circle.centerY = value
+  }
+
+  def radius: Double = circle.radius.value
+
+  def radius_=(value: Double): Unit = {
+    circle.radius = value
+    width = value * 2
+    height = value * 2
+  }
+
+  def setRadius(newRadius: Double): Unit = {
+    radius = newRadius
+  }
+
+  override def draw(): scalafx.scene.Node = circle
+}
+
+
 
 //Platforms
 class Platform(x: Double, y: Double, width: Double, height: Double) extends GameObject(x, y, width, height) {
@@ -42,6 +89,30 @@ class Platform(x: Double, y: Double, width: Double, height: Double) extends Game
   //Draw the platform
   override def draw(): scalafx.scene.Node = rectangle
 }
+
+//Plants class
+class Plant (x: Double, y: Double, width: Double = 40, height: Double = 40) extends GameObject(x, y, width, height) {
+  private val imageView = new ImageView {
+    image = new Image ("file:C:\\Users\\User\\Downloads\\plant.png")
+    this.x = Plant.this.x
+    this.y = Plant.this.y
+    this.fitWidth = Plant.this.width
+    this.fitHeight = Plant.this.height
+  }
+
+  def applyEffect(ball: Ball): Unit = {
+    if (!ball.isGrown) {
+      ball.setRadius(ball.grownRadius) // Grow the ball
+      ball.isGrown = true
+    } else {
+      ball.setRadius(ball.defaultRadius) // Shrink the ball
+      ball.isGrown = false
+    }
+  }
+
+  override def draw(): scalafx.scene.Node = imageView
+  }
+
 object MainApp extends JFXApp3{
 
   override def start(): Unit = {
@@ -54,15 +125,7 @@ object MainApp extends JFXApp3{
         fill = Color.LightGrey
 
         //Ball
-        val ball = new Circle {
-          centerX = 100
-          centerY = 100
-          radius = 20
-          fill = Color.Red
-        }
-        val defaultRadius = 20
-        val grownRadius = 30
-        var isGrown = false //states to track the ball size
+        val ball = new Ball (100, 100, 20)
 
         //Platforms
         val platforms = Seq(
@@ -73,20 +136,10 @@ object MainApp extends JFXApp3{
         )
 
         //Plants
-        val plant1 = new ImageView {
-          image = new Image ("file:C:\\Users\\User\\Downloads\\plant.png")
-              x = 50
-              y = 360
-              fitWidth = 40
-              fitHeight = 40
-        }
-        val plant2 = new ImageView {
-          image = new Image ("file:C:\\Users\\User\\Downloads\\plant.png")
-              x = 550
-              y = 360
-              fitWidth =40
-              fitHeight = 40
-        }
+        val plants = List (
+          new Plant (50, 360),
+          new Plant (550, 360)
+        )
 
         //Spikes
         val spike1 = new ImageView {
@@ -105,7 +158,6 @@ object MainApp extends JFXApp3{
         }
 
         val spikes = List (spike1, spike2)
-        val plants = List (plant1, plant2)
         
         //Timer variables
         var startTime = System.nanoTime()
@@ -118,7 +170,7 @@ object MainApp extends JFXApp3{
         }
 
         //Scene content
-        content = Seq(ball, timerText) ++ platforms.map(_.draw()) ++ plants ++ spikes
+        content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw()) ++ spikes
 
         //Gravity and Physics Variables
         var velocityY = 0.0
@@ -128,8 +180,8 @@ object MainApp extends JFXApp3{
         // Handle Keyboard input for ball movement
         onKeyPressed = keyEvent => {
           keyEvent.code match {
-            case KeyCode.Left => ball.centerX.value -= 20 // Move left
-            case KeyCode.Right => ball.centerX.value += 20 // Move right
+            case KeyCode.Left => ball.centerX -= 20 // Move left
+            case KeyCode.Right => ball.centerX += 20 // Move right
             case KeyCode.Up =>
               if (onPlatform) {
                 velocityY = -10
@@ -143,72 +195,52 @@ object MainApp extends JFXApp3{
         val gameLoop = AnimationTimer { _ =>
           //Applying Gravity
           velocityY += gravity
-          ball.centerY.value += velocityY
+          ball.centerY += velocityY
 
           //Collision detection with platforms
           onPlatform = false
           platforms.foreach { platform =>
             //Top collision
-            if (velocityY >= 0 &&
-                ball.centerY.value + ball.radius.value >= platform.y &&
-                ball.centerY.value <= platform.y + platform.height &&
-                ball.centerX.value >= platform.x &&
-                ball.centerX.value <= platform.x + platform.width) {
-              ball.centerY.value = platform.y - ball.radius.value //Places the ball on top of the platform
+            if (ball.collidesWith(platform) && velocityY >=0) {
+              ball.centerY = platform.y - ball.radius //Places the ball on top of the platform
               velocityY = 0 //Stops the downward motion
               onPlatform = true
             }
 
             //Bottom Collisions
             if (velocityY <0 &&
-                ball.centerY.value - ball.radius.value <= platform.y + platform.height &&
-                ball.centerY.value > platform.y &&
-                ball.centerX.value >= platform.x &&
-                ball.centerX.value <= platform.x + platform.width) {
+                ball.centerY - ball.radius <= platform.y + platform.height &&
+                ball.centerY > platform.y &&
+                ball.centerX >= platform.x &&
+                ball.centerX <= platform.x + platform.width) {
               velocityY = 0 //Stops downward motion
-              ball.centerY.value = platform.y - ball.radius.value
+              ball.centerY = platform.y - ball.radius
             }
 
             //Side Collisions
-            if (ball.centerX.value + ball.radius.value >= platform.x &&
-                ball.centerX.value - ball.radius.value <= platform.x + platform.width &&
-                ball.centerY.value >= platform.y &&
-                ball.centerY.value <= platform.y + platform.height) {
-              if (ball.centerX.value < platform.x) { //Left side
-                ball.centerX.value = platform.x - ball.radius.value
-              } else if (ball.centerX.value > platform.x + platform.width) {
-                ball.centerX.value = platform.x + platform.width + ball.radius.value
+            if (ball.centerX + ball.radius >= platform.x &&
+                ball.centerX - ball.radius <= platform.x + platform.width &&
+                ball.centerY >= platform.y &&
+                ball.centerY <= platform.y + platform.height) {
+              if (ball.centerX < platform.x) { //Left side
+                ball.centerX = platform.x - ball.radius
+              } else if (ball.centerX > platform.x + platform.width) {
+                ball.centerX = platform.x + platform.width + ball.radius
               }
             }
           }
 
           // Prevent ball from falling below the ground/platform
-          if (ball.centerY.value + ball.radius.value > 600) {
-            ball.centerY.value = 600 - ball.radius.value
+          if (ball.centerY + ball.radius > 600) {
+            ball.centerY= 600 - ball.radius
             velocityY = 0
             onPlatform = true
           }
 
           //Plants collision detection
           plants.foreach { plant =>
-            //Get precise dimensions of the plant
-            val plantX = plant.x.value
-            val plantY = plant.y.value
-            val plantWidth = plant.fitWidth.value
-            val plantHeight = plant.fitHeight.value
-
-            //Get plants bounding box
-            val plantBounds = plant.getBoundsInParent
-            if (ball.centerX.value + ball.radius.value >= plantX &&
-                ball.centerX.value - ball.radius.value <= plantX + plantWidth &&
-                ball.centerY.value + ball.radius.value >= plantY &&
-                ball.centerY.value - ball.radius.value <= plantY + plantHeight) {
-              if (!isGrown) {
-                ball.radius.value = grownRadius //Grow the ball
-              } else {
-                ball.radius.value = defaultRadius //Shrink the ball
-                isGrown = false
-              }
+            if (ball.collidesWith(plant)) {
+              plant.applyEffect(ball)
             }
           }
 
