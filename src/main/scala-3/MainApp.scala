@@ -72,9 +72,7 @@ class Ball(startX: Double, startY: Double, initialRadius: Double, var isGrown: B
   override def draw(): scalafx.scene.Node = circle
 }
 
-
-
-//Platforms
+//Platform class
 class Platform(x: Double, y: Double, width: Double, height: Double) extends GameObject(x, y, width, height) {
   private val rectangle = new Rectangle {
     this.x = Platform.this.x
@@ -124,6 +122,18 @@ class Spike(x: Double, y: Double, width: Double = 40, height: Double = 40) exten
   override def draw(): scalafx.scene.Node = imageView
 }
 
+//Heart class
+class Heart(x: Double, y: Double, width: Double = 30, height: Double = 30) extends GameObject(x, y, width, height) {
+  private val imageView = new ImageView {
+    image = new Image("file:C:\\Users\\User\\Downloads\\heart.png")
+    this.x = Heart.this.x
+    this.y = Heart.this.y
+    this.fitWidth = Heart.this.width
+    this.fitHeight = Heart.this.height
+  }
+
+  override def draw(): scalafx.scene.Node = imageView
+}
 object MainApp extends JFXApp3{
 
   override def start(): Unit = {
@@ -158,7 +168,7 @@ object MainApp extends JFXApp3{
           new Spike (600, 360)
         )
 
-        
+
         //Timer variables
         var startTime = System.nanoTime()
         val timerText = new Text {
