@@ -138,6 +138,20 @@ class Heart(x: Double, y: Double, width: Double = 30, height: Double = 30) exten
 
   override def draw(): scalafx.scene.Node = imageView
 }
+
+//Ring class
+class Ring(x: Double, y: Double, width: Double = 60, height: Double = 70) extends GameObject(x, y, width, height) {
+  private val imageView = new ImageView {
+    image = new Image("ring.png")
+    this.x = Ring.this.x
+    this.y = Ring.this.y
+    this.fitWidth = Ring.this.width
+    this.fitHeight = Ring.this.height
+  }
+
+  override def draw(): scalafx.scene.Node = imageView
+}
+
 class GameScene(stage: Stage) {
 
   //Ball
@@ -170,6 +184,12 @@ class GameScene(stage: Stage) {
     new Heart(25, 10)
   )
 
+  // Rings
+  val rings = List(
+    new Ring(367, 160),
+    new Ring(535, 55)
+  )
+
   //Timer variables
   var startTime = System.nanoTime()
   val timerText = new Text {
@@ -194,7 +214,8 @@ class GameScene(stage: Stage) {
   val scene: Scene = new Scene(800, 600) {
     fill = Color.LightGrey
 
-    content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw()) ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw())
+    content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
+    ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
 
     // Handle Keyboard input for ball movement
     onKeyPressed = keyEvent => {
@@ -272,11 +293,13 @@ class GameScene(stage: Stage) {
           if (lives == 2) {
             // First collision: decrease lives to 1
             lives -= 1
-            content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw()) ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw())
+            content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
+            ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
           } else if (lives == 1) {
             // Second collision: decrease lives to 0 and end the game
             lives -= 1
-            content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw()) ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw())
+            content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
+            ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
 
             // Triggers game over
             gameLoop.stop()
@@ -312,13 +335,14 @@ class GameScene(stage: Stage) {
             ball.centerY = 100
             startTime = System.nanoTime() // Reset the timer
             gameLoop.start() // Restart the game loop
-            content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw()) ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw())
+            content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
+            ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
           }
 
           def goToHome(stage: Stage): Unit = {
             WelcomeScreen.show(stage, startGame = () => {
-              // start the game from the welcome screen
-              restartGame()
+              val newGameScene = new GameScene(stage)
+              stage.scene = newGameScene.scene // Sets the new game scene
             })
           }
         }
