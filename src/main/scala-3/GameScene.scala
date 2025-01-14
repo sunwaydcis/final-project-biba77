@@ -183,6 +183,9 @@ class GameScene(stage: Stage) {
   val gravity = 0.5
   var onPlatform = false
 
+  // Define a cooldown variable
+  var collisionCooldown: Long = 0 // Tracks the time of the last collision
+
   // Define gameLoop at the class level
   var gameLoop: AnimationTimer = _
 
@@ -260,7 +263,10 @@ class GameScene(stage: Stage) {
 
       // Spike collision detection
       spikes.foreach { spike =>
-        if (ball.collidesWith(spike)) {
+        if (ball.collidesWith(spike) && System.nanoTime() - collisionCooldown > 1e9) {
+          // Register collision only if 1 second has passed since the last collision
+          collisionCooldown = System.nanoTime() // Updates the cooldown
+
           if (lives == 2) {
             // First collision: decrease lives to 1
             lives -= 1
@@ -270,20 +276,21 @@ class GameScene(stage: Stage) {
             lives -= 1
             content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw()) ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw())
 
-            // Trigger game over
+            // Triggers game over
             gameLoop.stop()
             val gameOverText = new Text {
               text = "Game Over!"
+              font = Font.font("Arial", javafx.scene.text.FontWeight.BOLD, 50)
               font = Font(50)
               fill = Color.Red
               x = 300
               y = 300
             }
-            content = Seq(gameOverText) // Replace content with "Game Over" message
+            content = Seq(gameOverText) //"Game Over" message
           }
         }
       }
-
+    }
 
       // Timer Update
       val elapsedTime = (System.nanoTime() - startTime) / 1e9
@@ -293,7 +300,7 @@ class GameScene(stage: Stage) {
     // Start the AnimationTimer
     gameLoop.start()
   }
-}
+
 
 
 
