@@ -215,7 +215,7 @@ class GameScene(stage: Stage) {
     fill = Color.LightGrey
 
     content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
-    ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
+      ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
 
     // Handle Keyboard input for ball movement
     onKeyPressed = keyEvent => {
@@ -294,12 +294,12 @@ class GameScene(stage: Stage) {
             // First collision: decrease lives to 1
             lives -= 1
             content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
-            ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
+              ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
           } else if (lives == 1) {
             // Second collision: decrease lives to 0 and end the game
             lives -= 1
             content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
-            ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
+              ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
 
             // Triggers game over
             gameLoop.stop()
@@ -336,7 +336,7 @@ class GameScene(stage: Stage) {
             startTime = System.nanoTime() // Reset the timer
             gameLoop.start() // Restart the game loop
             content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
-            ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
+              ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
           }
 
           def goToHome(stage: Stage): Unit = {
@@ -347,7 +347,6 @@ class GameScene(stage: Stage) {
           }
         }
       }
-    }
 
       // Timer Update
       val elapsedTime = (System.nanoTime() - startTime) / 1e9
@@ -357,7 +356,7 @@ class GameScene(stage: Stage) {
     // Start the AnimationTimer
     gameLoop.start()
   }
-
+}
 
 
 
