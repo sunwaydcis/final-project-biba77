@@ -11,7 +11,6 @@ import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.Pane
 import scalafx.scene.text.{Font, Text}
 import scalafx.stage.Stage
-
 import scala.collection.mutable.ListBuffer
 
 
@@ -210,11 +209,23 @@ class GameScene(stage: Stage) {
   )
 
   // Coins
-  val coins = List(
+  val coins = ListBuffer(
     new Coin(250, 150),
     new Coin(400, 55),
     new Coin(700, 300)
   )
+
+  // Coin score
+  var coinScore = 0
+
+  // Display score text after collecting coins
+  val scoreText = new Text {
+    text = s"Coins: $coinScore"
+    font = Font(20)
+    fill = Color.Black
+    x = 2
+    y = 60
+  }
 
   //Timer variables
   var startTime = System.nanoTime()
@@ -349,7 +360,7 @@ class GameScene(stage: Stage) {
               x = 250
               y = 300
             }
-            content = Seq(gameOverText, restartButton, homeButton) //"Game Over" message
+            content = Seq(gameOverText, restartButton, homeButton) //Game Over screen display
           }
 
           //the restartGame and goToHome
@@ -393,6 +404,22 @@ class GameScene(stage: Stage) {
         }
       }
 
+      // Coins collision detection
+      coins.filter(coin => ball.collidesWith(coin)).foreach { coin =>
+        // Increment the coin score
+        coinScore += 1
+
+        // Update the score display
+        scoreText.text = s"Coins: $coinScore"
+
+        // Remove the coin from the mutable list
+        coins -= coin
+
+        // Update the content to remove the coin from the scene
+        content = Seq(ball.draw(), timerText, scoreText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
+          ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw()) ++ coins.map(_.draw())
+      }
+
       // Timer Update
       val elapsedTime = (System.nanoTime() - startTime) / 1e9
       timerText.text = f"Time: $elapsedTime%.1f"
@@ -402,7 +429,3 @@ class GameScene(stage: Stage) {
     gameLoop.start()
   }
 }
-
-
-
-
