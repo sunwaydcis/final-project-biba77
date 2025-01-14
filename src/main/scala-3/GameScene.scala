@@ -6,7 +6,9 @@ import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle}
 import scalafx.Includes.jfxKeyEvent2sfx
 import scalafx.animation.AnimationTimer
+import scalafx.scene.control.Button
 import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.layout.Pane
 import scalafx.scene.text.{Font, Text}
 import scalafx.stage.Stage
 
@@ -278,15 +280,46 @@ class GameScene(stage: Stage) {
 
             // Triggers game over
             gameLoop.stop()
+            // Inside your game-over logic
+            val restartButton = new Button("Restart") {
+              layoutX = 300
+              layoutY = 400
+              onAction = _ => restartGame() // Call a method to restart the game
+            }
+
+            val homeButton = new Button("Home") {
+              layoutX = 400
+              layoutY = 400
+              onAction = _ => goToHome(stage) // Call a method to navigate to the home screen
+            }
             val gameOverText = new Text {
               text = "Game Over!"
               font = Font.font("Arial", javafx.scene.text.FontWeight.BOLD, 50)
               font = Font(50)
               fill = Color.Red
-              x = 300
+              x = 250
               y = 300
             }
-            content = Seq(gameOverText) //"Game Over" message
+            content = Seq(gameOverText, restartButton, homeButton) //"Game Over" message
+          }
+
+          //the restartGame and goToHome
+          def restartGame(): Unit = {
+            // Logic to reset game variables and restart the scene
+            lives = 2
+            velocityY = 0
+            ball.centerX = 100
+            ball.centerY = 100
+            startTime = System.nanoTime() // Reset the timer
+            gameLoop.start() // Restart the game loop
+            content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw()) ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw())
+          }
+
+          def goToHome(stage: Stage): Unit = {
+            WelcomeScreen.show(stage, startGame = () => {
+              // start the game from the welcome screen
+              restartGame()
+            })
           }
         }
       }
