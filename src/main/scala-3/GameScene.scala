@@ -157,6 +157,20 @@ class Ring(x: Double, y: Double, width: Double = 60, height: Double = 70) extend
   override def draw(): scalafx.scene.Node = imageView
 }
 
+//Coin class
+class Coin(x: Double, y: Double, width: Double = 30, height: Double = 30) extends GameObject(x, y, width, height) {
+  private val imageView = new ImageView {
+    image = new Image("coin.png") // Replace with the path to your coin image
+    this.x = Coin.this.x
+    this.y = Coin.this.y
+    this.fitWidth = Coin.this.width
+    this.fitHeight = Coin.this.height
+  }
+
+  override def draw(): scalafx.scene.Node = imageView
+}
+
+
 class GameScene(stage: Stage) {
 
   //Ball
@@ -360,7 +374,7 @@ class GameScene(stage: Stage) {
         if (
           ball.centerX >= ring.x && ball.centerX <= ring.x + ring.width &&
           ball.centerY >= ring.y && ball.centerY <= ring.y + ring.height &&
-          System.nanoTime() - lastRingChangeTime > 1e9 // Cooldown of 3 seconds)
+          System.nanoTime() - lastRingChangeTime > 1e9 // Cooldown of 1 second
         ){
           // Update the last color change time
           lastRingChangeTime = System.nanoTime()
