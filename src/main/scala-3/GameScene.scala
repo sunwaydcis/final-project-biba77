@@ -338,6 +338,7 @@ class GameScene(stage: Stage) {
             velocityY = 0
             ball.centerX = 100
             ball.centerY = 100
+            ball.setColor(Color.Red)
             startTime = System.nanoTime() // Reset the timer
             gameLoop.start() // Restart the game loop
             content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
@@ -357,14 +358,14 @@ class GameScene(stage: Stage) {
       // Rings collision detection
       rings.foreach { ring =>
         if (
-          ball.centerX >= ring.x && ball.centerX <= ring.x + ring.width && 
+          ball.centerX >= ring.x && ball.centerX <= ring.x + ring.width &&
           ball.centerY >= ring.y && ball.centerY <= ring.y + ring.height &&
           System.nanoTime() - lastRingChangeTime > 1e9 // Cooldown of 3 seconds)
         ){
           // Update the last color change time
           lastRingChangeTime = System.nanoTime()
           // Change the ball color to a random color
-          val predefinedColors = Seq(Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Purple, Color.Pink,
+          val predefinedColors = Seq(Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Purple,
           Color.Orange)
           val randomColor = predefinedColors(scala.util.Random.nextInt(predefinedColors.length))
           ball.setColor(randomColor)
