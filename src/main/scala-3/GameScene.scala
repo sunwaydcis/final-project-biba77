@@ -6,11 +6,13 @@ import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle}
 import scalafx.Includes.jfxKeyEvent2sfx
 import scalafx.animation.AnimationTimer
+import scalafx.geometry.Pos
 import scalafx.scene.control.Button
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.Pane
 import scalafx.scene.text.{Font, Text}
 import scalafx.stage.Stage
+
 import scala.collection.mutable.ListBuffer
 
 
@@ -178,9 +180,9 @@ class GameScene(stage: Stage) {
   //Platforms
   val platforms = Seq(
     new Platform(0, 300, 200, 40),
-    new Platform(0, 400, 800, 30),
     new Platform(200, 220, 200, 40),
-    new Platform(370, 120, 200, 40)
+    new Platform(370, 120, 200, 40),
+    new Platform(0, 400, 800, 30),
   )
 
   //Plants
@@ -270,6 +272,14 @@ class GameScene(stage: Stage) {
 
     //Game Physics and Collisions detected
     gameLoop = AnimationTimer { _ =>
+
+      def goToHome(stage: Stage): Unit = {
+        WelcomeScreen.show(stage, startGame = () => {
+          val newGameScene = new GameScene(stage)
+          stage.scene = newGameScene.scene // Sets the new game scene
+        })
+      }
+
       //Applying Gravity
       velocityY += gravity
       ball.centerY += velocityY
@@ -370,6 +380,7 @@ class GameScene(stage: Stage) {
             velocityY = 0
             ball.centerX = 100
             ball.centerY = 100
+            ball.setRadius(ball.defaultRadius) // Reset ball size
             ball.setColor(Color.Red)
             coinScore = 0 // Reset coin score
             startTime = System.nanoTime() // Reset the timer
@@ -383,13 +394,6 @@ class GameScene(stage: Stage) {
             gameLoop.start() // Restart the game loop
             content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
             ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw()) ++ coins.map(_.draw())
-          }
-
-          def goToHome(stage: Stage): Unit = {
-            WelcomeScreen.show(stage, startGame = () => {
-              val newGameScene = new GameScene(stage)
-              stage.scene = newGameScene.scene // Sets the new game scene
-            })
           }
         }
       }
@@ -426,6 +430,36 @@ class GameScene(stage: Stage) {
         // Update the content to remove the coin from the scene
         content = Seq(ball.draw(), timerText, scoreText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
           ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw()) ++ coins.map(_.draw())
+      }
+
+      // Check if the ball reaches the end of the last platform
+      val lastPlatform = platforms.last
+      if (ball.centerX >= lastPlatform.x + lastPlatform.width - ball.radius &&
+        ball.centerY >= lastPlatform.y - ball.radius) {
+        // Stop the game loop
+        gameLoop.stop()
+
+        // Calculate elapsed time
+        val elapsedTime = (System.nanoTime() - startTime) / 1e9
+        val formattedTime = f"$elapsedTime%.1f"
+
+        // Display "You Won!" message
+        val winMessage = new Text {
+          text = s"You Won! Coins: $coinScore, Time: $formattedTime seconds"
+          font = Font.font("Arial", javafx.scene.text.FontWeight.BOLD, 30)
+          fill = Color.Green
+          x = 100
+          y = 250
+        }
+
+        val homeButton = new Button("Home") {
+          layoutX = 400
+          layoutY = 400
+          onAction = _ => goToHome(stage) // Go to the home screen
+          alignment = Pos.Center
+        }
+
+        content = Seq(winMessage, homeButton) // Replace content with the win screen
       }
 
       // Timer Update
