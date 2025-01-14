@@ -183,6 +183,9 @@ class GameScene(stage: Stage) {
   val gravity = 0.5
   var onPlatform = false
 
+  // Define gameLoop at the class level
+  var gameLoop: AnimationTimer = _
+
   val scene: Scene = new Scene(800, 600) {
     fill = Color.LightGrey
 
@@ -203,7 +206,7 @@ class GameScene(stage: Stage) {
     }
 
     //Game Physics and Collisions detected
-    val gameLoop = AnimationTimer { _ =>
+    gameLoop = AnimationTimer { _ =>
       //Applying Gravity
       velocityY += gravity
       ball.centerY += velocityY
@@ -255,6 +258,33 @@ class GameScene(stage: Stage) {
         }
       }
 
+      // Spike collision detection
+      spikes.foreach { spike =>
+        if (ball.collidesWith(spike)) {
+          if (lives == 2) {
+            // First collision: decrease lives to 1
+            lives -= 1
+            content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw()) ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw())
+          } else if (lives == 1) {
+            // Second collision: decrease lives to 0 and end the game
+            lives -= 1
+            content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw()) ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw())
+
+            // Trigger game over
+            gameLoop.stop()
+            val gameOverText = new Text {
+              text = "Game Over!"
+              font = Font(50)
+              fill = Color.Red
+              x = 300
+              y = 300
+            }
+            content = Seq(gameOverText) // Replace content with "Game Over" message
+          }
+        }
+      }
+
+
       // Timer Update
       val elapsedTime = (System.nanoTime() - startTime) / 1e9
       timerText.text = f"Time: $elapsedTime%.1f"
@@ -264,6 +294,7 @@ class GameScene(stage: Stage) {
     gameLoop.start()
   }
 }
+
 
 
 
