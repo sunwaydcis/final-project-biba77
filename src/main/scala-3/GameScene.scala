@@ -371,7 +371,15 @@ class GameScene(stage: Stage) {
             ball.centerX = 100
             ball.centerY = 100
             ball.setColor(Color.Red)
+            coinScore = 0 // Reset coin score
             startTime = System.nanoTime() // Reset the timer
+            // Reinitialize coins
+            coins.clear()
+            coins ++= List(
+              new Coin(250, 150),
+              new Coin(400, 55),
+              new Coin(700, 300)
+            )
             gameLoop.start() // Restart the game loop
             content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
             ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw()) ++ coins.map(_.draw())
