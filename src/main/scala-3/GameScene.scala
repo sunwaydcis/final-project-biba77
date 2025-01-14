@@ -73,6 +73,11 @@ class Ball(startX: Double, startY: Double, initialRadius: Double, var isGrown: B
     radius = newRadius
   }
 
+  // Add a method to set the ball's color
+  def setColor(color: Color): Unit = {
+    circle.fill = color
+  }
+
   override def draw(): scalafx.scene.Node = circle
 }
 
@@ -215,7 +220,7 @@ class GameScene(stage: Stage) {
     fill = Color.LightGrey
 
     content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
-      ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
+    ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
 
     // Handle Keyboard input for ball movement
     onKeyPressed = keyEvent => {
@@ -294,12 +299,12 @@ class GameScene(stage: Stage) {
             // First collision: decrease lives to 1
             lives -= 1
             content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
-              ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
+            ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
           } else if (lives == 1) {
             // Second collision: decrease lives to 0 and end the game
             lives -= 1
             content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
-              ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
+            ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
 
             // Triggers game over
             gameLoop.stop()
@@ -336,7 +341,7 @@ class GameScene(stage: Stage) {
             startTime = System.nanoTime() // Reset the timer
             gameLoop.start() // Restart the game loop
             content = Seq(ball.draw(), timerText) ++ platforms.map(_.draw()) ++ plants.map(_.draw())
-              ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
+            ++ spikes.map(_.draw()) ++ hearts.take(lives).map(_.draw()) ++ rings.map(_.draw())
           }
 
           def goToHome(stage: Stage): Unit = {
@@ -345,6 +350,24 @@ class GameScene(stage: Stage) {
               stage.scene = newGameScene.scene // Sets the new game scene
             })
           }
+        }
+      }
+      var lastRingChangeTime: Long = 0 // Time of the last color change
+
+      // Rings collision detection
+      rings.foreach { ring =>
+        if (
+          ball.centerX >= ring.x && ball.centerX <= ring.x + ring.width && 
+          ball.centerY >= ring.y && ball.centerY <= ring.y + ring.height &&
+          System.nanoTime() - lastRingChangeTime > 1e9 // Cooldown of 3 seconds)
+        ){
+          // Update the last color change time
+          lastRingChangeTime = System.nanoTime()
+          // Change the ball color to a random color
+          val predefinedColors = Seq(Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Purple, Color.Pink,
+          Color.Orange)
+          val randomColor = predefinedColors(scala.util.Random.nextInt(predefinedColors.length))
+          ball.setColor(randomColor)
         }
       }
 
