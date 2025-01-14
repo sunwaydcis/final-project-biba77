@@ -45,7 +45,7 @@ object WelcomeScreen {
   def showInstructions(): Unit = {
     lazy val instructionsStage: Stage = new Stage {
       title = "Game Instructions"
-      scene = new Scene(600, 400) {
+      scene = new Scene(600, 500) { // Increased height for additional content
         fill = Color.LightYellow
 
         // Title
@@ -55,8 +55,7 @@ object WelcomeScreen {
         }
 
         // Spikes Icon and Description
-        val spikesIcon = new ImageView(
-          new Image("spike.png")) {
+        val spikesIcon = new ImageView(new Image("spike.png")) {
           fitWidth = 40
           fitHeight = 40
         }
@@ -82,8 +81,26 @@ object WelcomeScreen {
           font = Font(16)
         }
 
+        // Coins Icon and Description
+        val coinsIcon = new ImageView(new Image("coin.png")) {
+          fitWidth = 40
+          fitHeight = 40
+        }
+        val coinsDescription = new Text("Coins can be collected to increase your score!") {
+          font = Font(16)
+        }
+
+        // Rings Icon and Description
+        val ringsIcon = new ImageView(new Image("ring.png")) {
+          fitWidth = 40
+          fitHeight = 40
+        }
+        val ringsDescription = new Text("Passing through rings will change the ball's color!") {
+          font = Font(16)
+        }
+
         // Game Purpose
-        val gamePurpose = new Text("Your goal is to survive till the end (and as fast as possible!)") {
+        val gamePurpose = new Text("Your goal is to survive till the end and collect as many coins as possible!") {
           font = Font(18)
           fill = Color.DarkGreen
         }
@@ -94,7 +111,7 @@ object WelcomeScreen {
           onAction = _ => instructionsStage.close() // Close the instructions window
         }
 
-        // Layout
+        // Layout for individual sections
         val spikesBox = new HBox(10, spikesIcon, spikesDescription) {
           alignment = Pos.CenterLeft
         }
@@ -104,11 +121,18 @@ object WelcomeScreen {
         val heartsBox = new HBox(10, heartsIcon, heartsDescription) {
           alignment = Pos.CenterLeft
         }
+        val coinsBox = new HBox(10, coinsIcon, coinsDescription) {
+          alignment = Pos.CenterLeft
+        }
+        val ringsBox = new HBox(10, ringsIcon, ringsDescription) {
+          alignment = Pos.CenterLeft
+        }
 
-        content = new VBox(20, instructionsTitle, spikesBox, plantsBox, heartsBox, gamePurpose, backButton) {
+        // Combine all instructions into a vertical layout
+        content = new VBox(20, instructionsTitle, spikesBox, plantsBox, heartsBox, coinsBox, ringsBox, gamePurpose, backButton) {
           alignment = Pos.Center
           prefWidth = 600
-          prefHeight = 400
+          prefHeight = 500
         }
       }
     }
