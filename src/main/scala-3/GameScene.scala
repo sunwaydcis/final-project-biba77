@@ -1,15 +1,11 @@
-import scalafx.application.JFXApp3
 import scalafx.scene.Scene
-import scalafx.application.JFXApp3.PrimaryStage
 import scalafx.scene.input.{KeyCode, KeyEvent}
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle}
 import scalafx.Includes.jfxKeyEvent2sfx
 import scalafx.animation.AnimationTimer
-import scalafx.geometry.Pos
 import scalafx.scene.control.Button
 import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.layout.Pane
 import scalafx.scene.text.{Font, Text}
 import scalafx.stage.Stage
 
@@ -456,10 +452,9 @@ class GameScene(stage: Stage) {
           layoutX = 400
           layoutY = 400
           onAction = _ => goToHome(stage) // Go to the home screen
-          alignment = Pos.Center
         }
 
-        content = Seq(winMessage, homeButton) // Replace content with the win screen
+        content = Seq(winMessage, homeButton) // displays the win screen
       }
 
       // Timer Update
