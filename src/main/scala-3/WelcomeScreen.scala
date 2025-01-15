@@ -31,7 +31,7 @@ object WelcomeScreen {
         onAction = _ => showInstructions()
       }
 
-      val layout = new VBox(20, titleText, startButton, instructionsButton) {
+      val layout = new VBox(30, titleText, startButton, instructionsButton) {
         alignment = Pos.Center
         prefWidth = 800
         prefHeight = 600
@@ -45,13 +45,22 @@ object WelcomeScreen {
   def showInstructions(): Unit = {
     lazy val instructionsStage: Stage = new Stage {
       title = "Game Instructions"
-      scene = new Scene(600, 500) { // Increased height for additional content
+      scene = new Scene(600, 600) { // Increased height for additional content
         fill = Color.LightYellow
 
         // Title
-        val instructionsTitle = new Text("Instructions") {
-          font = Font(24)
+        val instructionsTitle = new Text("Instructions & Controls") {
+          font = Font(28)
           fill = Color.DarkBlue
+        }
+
+        // Movement Controls Section
+        val controlsText = new Text("Use the following keys to navigate:\n" +
+          "← Left Arrow: Move Left\n" +
+          "→ Right Arrow: Move Right\n" +
+          "↑ Up Arrow: Jump") {
+          font = Font(16)
+          fill = Color.Black
         }
 
         // Spikes Icon and Description
@@ -129,10 +138,10 @@ object WelcomeScreen {
         }
 
         // Combine all instructions into a vertical layout
-        content = new VBox(20, instructionsTitle, spikesBox, plantsBox, heartsBox, coinsBox, ringsBox, gamePurpose, backButton) {
+        content = new VBox(20, instructionsTitle, controlsText, spikesBox, plantsBox, heartsBox, coinsBox, ringsBox, gamePurpose, backButton) {
           alignment = Pos.Center
           prefWidth = 600
-          prefHeight = 500
+          prefHeight = 600
         }
       }
     }
