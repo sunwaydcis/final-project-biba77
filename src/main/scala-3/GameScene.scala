@@ -8,8 +8,8 @@ import scalafx.scene.control.Button
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.text.{Font, Text}
 import scalafx.stage.Stage
-
 import scala.collection.mutable.ListBuffer
+import scalafx.scene.media.AudioClip
 
 
 //Base class for GameObject
@@ -216,6 +216,9 @@ class GameScene(stage: Stage) {
   // Coin score
   var coinScore = 0
 
+  // Load coin collection sound
+  val coinSound: AudioClip = new AudioClip(getClass.getResource("/Coin_Sound.mp3").toExternalForm)
+
   // Display score text after collecting coins
   val scoreText = new Text {
     text = s"Coins: $coinScore"
@@ -416,6 +419,9 @@ class GameScene(stage: Stage) {
       coins.filter(coin => ball.collidesWith(coin)).foreach { coin =>
         // Increment the coin score
         coinScore += 1
+
+        // Play the coin collection sound
+        coinSound.play()
 
         // Update the score display
         scoreText.text = s"Coins: $coinScore"
